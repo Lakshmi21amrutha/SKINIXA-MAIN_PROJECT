@@ -1,0 +1,221 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Book Appointment - Skinixa{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- Success Message for Appointment -->
+    {% if appointment_id %}
+    <div class="card" style="margin-bottom: 24px; border-left: 4px solid #10b981;">
+        <div class="card-body" style="text-align: center; padding: 40px;">
+            <div style="width: 80px; height: 80px; background: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 style="color: #10b981; margin-bottom: 12px;">Appointment Booked Successfully!</h2>
+            <p style="color: #6b7280; margin-bottom: 24px;">Your appointment has been confirmed. A confirmation email has been sent to your email address.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <a href="{% url 'userdash' %}" class="btn btn-primary">Go to Dashboard</a>
+                <a href="{% url 'book' %}" class="btn btn-secondary">Book Another</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Book an Appointment
+            </h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'book' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Patient Name -->
+                <div class="form-group">
+                    <label class="form-label" for="patient_name">Patient Name *</label>
+                    <input type="text" class="form-control" name="patient_name" id="patient_name"
+                           value="{{ patient_name|default:user_name }}" placeholder="Enter your full name" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address *</label>
+                    <input type="email" class="form-control" name="email" id="email"
+                           value="{{ email|default:user_email }}" placeholder="Enter your email for confirmation" required>
+                </div>
+
+                <!-- Select Doctor -->
+                <div class="form-group">
+                    <label class="form-label" for="doctor">Select Dermatologist *</label>
+                    <select class="form-control" name="doctor" id="doctor" required>
+                        <option value="">Choose a dermatologist...</option>
+                        {% for doc in dermatologists %}
+                        <option value="{{ doc.id }}" {% if doctor == doc.id|stringformat:"s" %}selected{% endif %}>
+                            Dr. {{ doc.name }} - {{ doc.specialization }} ({{ doc.experience }} years exp.)
+                        </option>
+                        {% empty %}
+                        <option value="" disabled>No dermatologists available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Date and Time -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="date">Appointment Date *</label>
+                        <input type="date" class="form-control" name="date" id="date"
+                               value="{{ date }}" min="" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="time">Preferred Time *</label>
+                        <input type="time" class="form-control" name="time" id="time"
+                               value="{{ time }}" min="08:00" max="18:00" required>
+                        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Available: 8:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+
+                <!-- Slot Selection -->
+                <div class="form-group">
+                    <label class="form-label">Appointment Type *</label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        <label class="slot-option {% if slot == 'consultation' %}selected{% endif %}">
+                            <input type="radio" name="slot" value="consultation" {% if slot == 'consultation' %}checked{% endif %} required>
+                            <div class="slot-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                </svg>
+                                <span>General Consultation</span>
+                            </div>
+                        </label>
+                        <label class="slot-option {% if slot == 'follow-up' %}selected{% endif %}">
+                            <input type="radio" name="slot" value="follow-up" {% if slot == 'follow-up' %}checked{% endif %}>
+                            <div class="slot-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                                </svg>
+                                <span>Follow-up Visit</span>
+                            </div>
+                        </label>
+                        <label class="slot-option {% if slot == 'treatment' %}selected{% endif %}">
+                            <input type="radio" name="slot" value="treatment" {% if slot == 'treatment' %}checked{% endif %}>
+                            <div class="slot-content">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                                <span>Treatment Session</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Test Results PDF (Optional) -->
+                <div class="form-group">
+                    <label class="form-label" for="test_result_pdf">Upload Previous Test Results (Optional)</label>
+                    <input type="file" class="form-control" name="test_result_pdf" id="test_result_pdf" accept=".pdf,.jpg,.jpeg,.png">
+                    <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Upload any previous test results or reports (PDF, JPG, PNG)</p>
+                </div>
+
+                <!-- Submit -->
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <a href="{% url 'userdash' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Book Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card" style="margin-top: 24px; border-left: 4px solid #3b82f6;">
+        <div class="card-body">
+            <h4 style="color: #3b82f6; margin-bottom: 12px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                Important Information
+            </h4>
+            <ul style="color: #6b7280; font-size: 14px; margin-left: 16px; line-height: 1.8;">
+                <li>Please arrive at least 10 minutes before your scheduled appointment.</li>
+                <li>Bring any previous medical reports or test results related to your skin condition.</li>
+                <li>If you need to cancel or reschedule, please do so at least 24 hours in advance.</li>
+                <li>A confirmation email will be sent to your registered email address.</li>
+                <li>Each doctor can accommodate up to 50 appointments per day.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .slot-option {
+        display: block;
+        cursor: pointer;
+    }
+
+    .slot-option input {
+        display: none;
+    }
+
+    .slot-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .slot-option input:checked + .slot-content,
+    .slot-option:hover .slot-content {
+        border-color: #7c3aed;
+        background: rgba(124, 58, 237, 0.05);
+    }
+
+    .slot-option input:checked + .slot-content {
+        background: rgba(124, 58, 237, 0.1);
+    }
+
+    .slot-content svg {
+        color: #7c3aed;
+    }
+
+    .slot-content span {
+        font-weight: 500;
+        color: #374151;
+    }
+</style>
+
+<script>
+    // Set minimum date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // If no date is set, default to today
+        if (!dateInput.value) {
+            dateInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

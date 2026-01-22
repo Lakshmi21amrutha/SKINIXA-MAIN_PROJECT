@@ -1,0 +1,112 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}FAQs - Skinixa{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Frequently Asked Questions
+            </h3>
+        </div>
+        <div class="card-body">
+            <!-- Category Filter -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                <a href="{% url 'faq_list' %}"
+                    class="btn {% if not request.GET.category %}btn-primary{% else %}btn-secondary{% endif %}"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    All
+                </a>
+                <a href="?category=general"
+                    class="btn {% if request.GET.category == 'general' %}btn-primary{% else %}btn-secondary{% endif %}"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    General
+                </a>
+                <a href="?category=prediction"
+                    class="btn {% if request.GET.category == 'prediction' %}btn-primary{% else %}btn-secondary{% endif %}"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    Prediction
+                </a>
+                <a href="?category=treatment"
+                    class="btn {% if request.GET.category == 'treatment' %}btn-primary{% else %}btn-secondary{% endif %}"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    Treatment
+                </a>
+                <a href="?category=prevention"
+                    class="btn {% if request.GET.category == 'prevention' %}btn-primary{% else %}btn-secondary{% endif %}"
+                    style="padding: 8px 16px; font-size: 13px;">
+                    Prevention
+                </a>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div class="faq-list">
+                {% for faq in faqs %}
+                <div class="faq-item" style="border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 12px;">
+                    <button class="faq-question" onclick="toggleFaq(this)"
+                        style="width: 100%; padding: 16px 20px; background: none; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 15px; color: #374151;">
+                        {{ faq.question }}
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </button>
+                    <div class="faq-answer"
+                        style="display: none; padding: 0 20px 16px; color: #6b7280; line-height: 1.7;">
+                        {{ faq.answer }}
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        style="margin-bottom: 16px; opacity: 0.5;">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <p>No FAQs available yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Still have questions? -->
+    <div class="card"
+        style="margin-top: 24px; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); color: white;">
+        <div class="card-body" style="text-align: center; padding: 32px;">
+            <h3 style="margin-bottom: 12px;">Still have questions?</h3>
+            <p style="opacity: 0.9; margin-bottom: 20px;">Our AI chatbot is here to help 24/7</p>
+            <a href="{% url 'chatbot' %}" class="btn" style="background: white; color: #7c3aed;">
+                Chat with AI Assistant
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFaq(button) {
+        const answer = button.nextElementSibling;
+        const icon = button.querySelector('.faq-icon');
+        const isOpen = answer.style.display === 'block';
+
+        // Close all others
+        document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+        document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0)');
+
+        // Toggle current
+        if (!isOpen) {
+            answer.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        }
+    }
+</script>
+{% endblock %}

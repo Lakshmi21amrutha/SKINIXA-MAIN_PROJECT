@@ -1,0 +1,167 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard - Skinixa{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+            <h2 style="color: #1f2937; margin-bottom: 4px;">
+                🩺 Doctor Dashboard
+            </h2>
+            <p style="color: #6b7280; font-size: 14px;">
+                {{ date_filter|date:"l, F d, Y" }} |
+                {% if is_previous %}Previous Appointments{% else %}Today's Appointments{% endif %}
+            </p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="?page=today" class="btn {% if not is_previous %}btn-primary{% else %}btn-secondary{% endif %}">
+                Today
+            </a>
+            <a href="?page=previous" class="btn {% if is_previous %}btn-primary{% else %}btn-secondary{% endif %}">
+                Previous
+            </a>
+        </div>
+    </div>
+
+    <!-- Search by Date -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-body" style="padding: 16px;">
+            <form method="GET" action="" style="display: flex; gap: 12px; align-items: center;">
+                <label style="font-weight: 600; color: #374151;">Search by Date:</label>
+                <input type="date" name="search_date" class="form-control" style="max-width: 200px;"
+                    value="{{ search_date }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{% url 'doctor_dashboard' %}" class="btn btn-secondary">Clear</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Appointments -->
+    {% if grouped_appointments %}
+    {% for doctor_name, appointments in grouped_appointments.items %}
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #3b82f6); color: white;">
+            <h3 class="card-title" style="color: white; margin: 0;">
+                {{ doctor_name }}
+                <span
+                    style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 13px; margin-left: 12px;">
+                    {{ appointments|length }} Appointment{{ appointments|length|pluralize }}
+                </span>
+            </h3>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Token</th>
+                            <th>Patient Name</th>
+                            <th>Email</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Test Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td>
+                                <span
+                                    style="background: #7c3aed; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 700;">
+                                    #{{ appointment.token|default:"--" }}
+                                </span>
+                            </td>
+                            <td style="font-weight: 600;">{{ appointment.patient_name }}</td>
+                            <td>{{ appointment.email }}</td>
+                            <td>
+                                <span
+                                    style="background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 12px; font-size: 13px;">
+                                    {{ appointment.time|time:"h:i A" }}
+                                </span>
+                            </td>
+                            <td>
+                                <span
+                                    style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 12px; font-size: 13px;">
+                                    {{ appointment.slot|default:"General" }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if appointment.test_result_pdf %}
+                                <a href="{{ appointment.test_result_pdf.url }}" target="_blank" class="btn btn-primary"
+                                    style="padding: 6px 12px; font-size: 12px;">
+                                    📄 View PDF
+                                </a>
+                                {% else %}
+                                <span style="color: #9ca3af; font-size: 13px;">No file uploaded</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 60px 20px;">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1"
+                style="margin-bottom: 16px;">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <h3 style="color: #6b7280; margin-bottom: 8px;">No Appointments</h3>
+            <p style="color: #9ca3af;">
+                {% if is_previous %}
+                There were no appointments yesterday.
+                {% else %}
+                No appointments scheduled for today.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Stats -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px;">
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: 20px;">
+                <div style="font-size: 32px; font-weight: 700; color: #7c3aed;">
+                    {{ total_appointments|default:0 }}
+                </div>
+                <div style="color: #6b7280; font-size: 14px;">Total Appointments</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: 20px;">
+                <div style="font-size: 32px; font-weight: 700; color: #10b981;">
+                    {{ grouped_appointments.keys|length|default:0 }}
+                </div>
+                <div style="color: #6b7280; font-size: 14px;">Doctors Active</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: 20px;">
+                <div style="font-size: 32px; font-weight: 700; color: #3b82f6;">
+                    {{ date_filter|date:"d" }}
+                </div>
+                <div style="color: #6b7280; font-size: 14px;">{{ date_filter|date:"F Y" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Button -->
+    <div style="margin-top: 24px; text-align: center;">
+        <a href="{% url 'logout' %}" class="btn btn-secondary">
+            Logout
+        </a>
+    </div>
+</div>
+{% endblock %}

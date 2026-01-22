@@ -1,0 +1,120 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Emergency Guidelines - Skinixa{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <!-- Emergency Helplines - Top Priority -->
+    <div class="card" style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; margin-bottom: 24px;">
+        <div class="card-body" style="text-align: center; padding: 32px;">
+            <h2 style="margin-bottom: 8px; font-size: 24px;">Emergency Helplines</h2>
+            <p style="opacity: 0.9; margin-bottom: 24px;">For immediate medical assistance, call these numbers:</p>
+
+            <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                <a href="tel:108"
+                    style="background: white; color: #dc2626; padding: 16px 32px; border-radius: 12px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    🚑 Ambulance: 108
+                </a>
+                <a href="tel:112"
+                    style="background: white; color: #dc2626; padding: 16px 32px; border-radius: 12px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    📞 Emergency: 112
+                </a>
+                <a href="tel:104"
+                    style="background: white; color: #dc2626; padding: 16px 32px; border-radius: 12px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    🏥 Health: 104
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Helplines -->
+    {% if helplines %}
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+            <h3 class="card-title">Additional Helpline Numbers</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                {% for name, number in helplines.items %}
+                <div
+                    style="background: #f9fafb; padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600;">{{ name }}</span>
+                    <a href="tel:{{ number }}" style="color: #7c3aed; font-weight: 700;">{{ number }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Emergency Guidelines -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-right: 8px;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Emergency Guidelines
+            </h3>
+        </div>
+        <div class="card-body">
+            {% for guideline in guidelines %}
+            <div
+                style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px; border-left: 4px solid {% if guideline.priority == 'critical' %}#ef4444{% elif guideline.priority == 'high' %}#f97316{% elif guideline.priority == 'medium' %}#f59e0b{% else %}#10b981{% endif %};">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <h4 style="color: #374151; margin: 0;">{{ guideline.title }}</h4>
+                    <span class="urgency-badge {{ guideline.priority }}">{{ guideline.priority|title }}</span>
+                </div>
+                <p style="color: #6b7280; line-height: 1.7; margin-bottom: 12px;">{{ guideline.content }}</p>
+                {% if guideline.warning_signs %}
+                <div style="background: #fef2f2; padding: 12px 16px; border-radius: 8px;">
+                    <strong style="color: #dc2626;">⚠️ Warning Signs:</strong>
+                    <span style="color: #7f1d1d;"> {{ guideline.warning_signs }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <!-- Default Guidelines if none in database -->
+            <div
+                style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px; border-left: 4px solid #ef4444;">
+                <h4 style="color: #374151; margin-bottom: 12px;">When to Seek Immediate Medical Attention</h4>
+                <ul style="color: #6b7280; line-height: 1.8; padding-left: 20px;">
+                    <li>Rapidly spreading rash or skin infection</li>
+                    <li>Severe allergic reaction (swelling, difficulty breathing)</li>
+                    <li>Signs of infection (fever, pus, red streaks)</li>
+                    <li>Severe burns covering large body areas</li>
+                    <li>Suspected skin cancer (changing moles, unusual growths)</li>
+                </ul>
+            </div>
+
+            <div
+                style="border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px; margin-bottom: 16px; border-left: 4px solid #f97316;">
+                <h4 style="color: #374151; margin-bottom: 12px;">First Aid for Common Skin Issues</h4>
+                <ul style="color: #6b7280; line-height: 1.8; padding-left: 20px;">
+                    <li><strong>Burns:</strong> Cool under running water for 10+ minutes. Don't apply ice.</li>
+                    <li><strong>Cuts:</strong> Clean with water, apply pressure to stop bleeding, use bandage.</li>
+                    <li><strong>Allergic reactions:</strong> Remove trigger, take antihistamine, apply cold compress.
+                    </li>
+                    <li><strong>Insect bites:</strong> Clean area, apply cold pack, use anti-itch cream.</li>
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="card" style="margin-top: 24px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white;">
+        <div class="card-body" style="text-align: center; padding: 32px;">
+            <h3 style="margin-bottom: 12px;">Not sure about your condition?</h3>
+            <p style="opacity: 0.9; margin-bottom: 20px;">Get an AI-powered analysis of your skin concern</p>
+            <a href="{% url 'predict' %}" class="btn" style="background: white; color: #7c3aed;">
+                Upload Image for Analysis
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

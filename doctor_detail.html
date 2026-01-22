@@ -1,0 +1,163 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Dr. {{ doctor.name }} - Skinixa{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <!-- Back Button -->
+    <a href="{% url 'user_doctors' %}" style="display: inline-flex; align-items: center; gap: 8px; color: #6b7280; margin-bottom: 24px; text-decoration: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to Doctors List
+    </a>
+
+    <!-- Doctor Profile Card -->
+    <div class="card" style="overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); padding: 40px; text-align: center; color: white;">
+            <!-- Profile Photo -->
+            <div style="width: 150px; height: 150px; border-radius: 50%; background: white; margin: 0 auto 20px; overflow: hidden; border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                {% if doctor.profile_photo %}
+                <img src="{{ doctor.profile_photo.url }}" alt="Dr. {{ doctor.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                {% endif %}
+            </div>
+
+            <h1 style="font-size: 28px; margin-bottom: 8px;">Dr. {{ doctor.name }}</h1>
+            <p style="opacity: 0.9; font-size: 18px;">{{ doctor.specialization }}</p>
+
+            <!-- Experience Badge -->
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 20px; margin-top: 16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {{ doctor.experience }} Years Experience
+            </div>
+        </div>
+
+        <div class="card-body" style="padding: 32px;">
+            <!-- Contact Information -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                <!-- Email -->
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 48px; height: 48px; background: #ede9fe; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; color: #9ca3af; margin-bottom: 4px;">Email</p>
+                        <a href="mailto:{{ doctor.email }}" style="color: #374151; font-weight: 500;">{{ doctor.email }}</a>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 48px; height: 48px; background: #d1fae5; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; color: #9ca3af; margin-bottom: 4px;">Contact</p>
+                        <a href="tel:{{ doctor.contact }}" style="color: #374151; font-weight: 500;">{{ doctor.contact }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinic Address -->
+            <div style="background: #f9fafb; border-radius: 12px; padding: 20px; margin-bottom: 32px;">
+                <div style="display: flex; align-items: flex-start; gap: 16px;">
+                    <div style="width: 48px; height: 48px; background: #fef3c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; color: #9ca3af; margin-bottom: 4px;">Clinic Address</p>
+                        <p style="color: #374151; font-weight: 500; line-height: 1.6;">{{ doctor.clinic_address }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;">
+                <div style="text-align: center; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+                    <div style="font-size: 28px; font-weight: 700; color: #7c3aed;">{{ doctor.experience }}+</div>
+                    <div style="font-size: 13px; color: #6b7280;">Years Experience</div>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+                    <div style="font-size: 28px; font-weight: 700; color: #10b981;">1000+</div>
+                    <div style="font-size: 13px; color: #6b7280;">Patients Treated</div>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f3f4f6; border-radius: 12px;">
+                    <div style="font-size: 28px; font-weight: 700; color: #f59e0b;">4.8</div>
+                    <div style="font-size: 13px; color: #6b7280;">Rating</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <a href="{% url 'book' %}?doctor={{ doctor.id }}" class="btn btn-primary" style="flex: 1; min-width: 200px; justify-content: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Book Appointment
+                </a>
+                <a href="tel:{{ doctor.contact }}" class="btn btn-secondary" style="flex: 1; min-width: 200px; justify-content: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                    </svg>
+                    Call Now
+                </a>
+                <a href="mailto:{{ doctor.email }}" class="btn btn-outline" style="flex: 1; min-width: 200px; justify-content: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Send Email
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialization Info -->
+    <div class="card" style="margin-top: 24px;">
+        <div class="card-header">
+            <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                About Specialization
+            </h3>
+        </div>
+        <div class="card-body">
+            <p style="color: #6b7280; line-height: 1.8;">
+                Dr. {{ doctor.name }} specializes in <strong>{{ doctor.specialization }}</strong> with over {{ doctor.experience }} years of experience
+                in diagnosing and treating various skin conditions. The doctor is available for consultations, follow-ups, and treatment sessions
+                at the clinic located at {{ doctor.clinic_address }}.
+            </p>
+            <div style="margin-top: 20px; padding: 16px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
+                <p style="color: #166534; font-size: 14px;">
+                    <strong>Tip:</strong> Book an appointment in advance to secure your preferred time slot.
+                    The doctor accepts appointments from 8:00 AM to 6:00 PM.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
